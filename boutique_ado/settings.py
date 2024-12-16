@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['8000-oleksandram-boutiqueado-07fuo9x6tav.ws.codeinstitute-ide.net']
 
+# Fix CSRF verification issue
+CSRF_TRUSTED_ORIGINS = [
+    'https://8000-oleksandram-boutiqueado-07fuo9x6tav.ws.codeinstitute-ide.net',
+]
 
 # Application definition
 
@@ -37,6 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # Required by allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 MIDDLEWARE = [
@@ -47,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',  # Added for allauth
 ]
 
 ROOT_URLCONF = 'boutique_ado.urls'
@@ -59,13 +68,41 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
+                'django.template.context_processors.request',  # Required by allauth
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
+ACCOUNT_USERNAME_MIN_LENGTH = 4
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/success'
+
+# Authentication and Allauth Settings
+ACCOUNT_EMAIL_VERIFICATION = "optional"  # Change to "mandatory" if email verification is required
+ACCOUNT_AUTHENTICATION_METHOD = "username"  # Can be "email" or "username_email"
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_EMAIL_REQUIRED = True  # Set to True if email is mandatory for registration
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
+LOGIN_REDIRECT_URL = "/"  # Redirect after login
 
 WSGI_APPLICATION = 'boutique_ado.wsgi.application'
 
@@ -123,3 +160,5 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
